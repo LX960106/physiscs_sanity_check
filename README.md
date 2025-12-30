@@ -5,8 +5,8 @@
 node sever.js
 # 本地启动项目，浏览器键入：http://localhost:3000/?reviewer=1/1读取所有代标注的文件逐条展示
 ```
-* 如果是本地，打开浏览器访问 http://localhost:3000
-* 如果多人标注，打开浏览器访问 http://localhost:3000/?reviewer=1/3 表示 id=1的用户进行标注，标注人数为3。系统内部会根据用户的ID，自动分配对应的标注文件。具体算法：利用标注文件json的文件名（file_name,file_nams为sha256 hash后的hash值）除以总用户数取余等该用户id的文件，即为该用户需要标注的文件。
+* 如果多人标注，打开浏览器访问 http://localhost:3000/?reviewer=1/3 表示 id=1的用户进行标注，标注人数为3。系统内部会根据用户的ID，自动分配对应的标注文件。具体算法：利用标注文件json的文件名（file_name,file_nams为sha256 hash后的hash值）除以总用户数取余等该用户id的文件，即为该用户需要标注的文件。逻辑展示如下：
+
 ```js
 files
     .filter(file => file.endsWith(".json"))
