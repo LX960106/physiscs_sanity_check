@@ -16,20 +16,20 @@ document.addEventListener("DOMContentLoaded", () => {
     const motionTypePanel = document.getElementById("motion-type-panel");
     const materialPanel = document.getElementById("material-category-panel");
 
-    function updateMotionRangeVisibility() {
-        const kinValid = document.querySelector("input[name='kinematics-valid']:checked")?.value;
-        const motionRangeChecked = document.querySelector(
-            "input[name='kinematics-reason'][value='motion_range']"
-        )?.checked;
+    // function updateMotionRangeVisibility() {
+    //     const kinValid = document.querySelector("input[name='kinematics-valid']:checked")?.value;
+    //     const motionRangeChecked = document.querySelector(
+    //         "input[name='kinematics-reason'][value='motion_range']"
+    //     )?.checked;
 
-        if (kinValid === "false" && motionRangeChecked && motionVideo.style.display !== "none") {
-            motionRangePanel.style.display = "block";
-        } else {
-            motionRangePanel.style.display = "none";
-            motionStartInput.value = "0";
-            motionEndInput.value = "3";
-        }
-    }
+    //     if (kinValid === "false" && motionRangeChecked && motionVideo.style.display !== "none") {
+    //         motionRangePanel.style.display = "block";
+    //     } else {
+    //         motionRangePanel.style.display = "none";
+    //         motionStartInput.value = "0";
+    //         motionEndInput.value = "3";
+    //     }
+    // }
 
     function handleKinematicsValidityChange(value) {
         const typeCheckbox = document.querySelector(
@@ -403,11 +403,11 @@ document.addEventListener("DOMContentLoaded", () => {
             });
     }
 
-    function parseValidity(v) {
-        if (v === "true") return true;
-        if (v === "false") return false;
-        return null; // unknown / cannot judge
-    }
+    // function parseValidity(v) {
+    //     if (v === "true") return true;
+    //     if (v === "false") return false;
+    //     return null; // unknown / cannot judge
+    // }
 
     function validateBeforeSubmit() {
         const physicsValid = document.querySelector(
@@ -513,17 +513,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const physicsValid = document.querySelector("input[name='physics-valid']:checked")?.value;
         const kinematicsValid = document.querySelector("input[name='kinematics-valid']:checked")?.value;
 
-        // if (!physicsValid || !kinematicsValid) {
-        //     alert("Please complete all required fields before submitting.");
-        //     return;
-        // }
-
         if (!validateBeforeSubmit()) {
             return;
         }
-
-
-
         const physicsReasons = Array.from(document.querySelectorAll("input[name='physics-reason']:checked"))
             .map(checkbox => checkbox.value);
         const kinematicsReasons = Array.from(document.querySelectorAll("input[name='kinematics-reason']:checked"))
