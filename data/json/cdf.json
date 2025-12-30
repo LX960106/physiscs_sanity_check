@@ -1,0 +1,22 @@
+{
+    "dataset": "ABO",
+    "type_name": "0",
+    "asset_id": "B00BBDF500",
+    "label": 1,
+    "name": "left Drawer Front Panel",
+    "material": "wood/Hardwood_Oak",
+    "density": "0.72",
+    "young": 11.5,
+    "hardness": 35,
+    "poisson": 0.35,
+    "friction": 0.45,
+    "priority_rank": 2,
+    "graspable": true,
+    "global_img_pth": "/imgs/1.png",
+    "ori_img_pth": "/imgs/view_4.png",
+    "video_pth": "",
+    "Basic_description": "Solid oak drawer face panel, approx. 30*16*1.8 cm, for the right-hand drawer.",
+    "Functional_description": "Forms the visible front of the right drawer; supports the pull and provides hand contact to open/close.",
+    "Movement_description": "Slides in and out of the console body on runners as a complete drawer assembly, guided by the face frame.",
+    "Grasped_description": "Users grasp the pull or edges of this panel to operate the right drawer."
+}

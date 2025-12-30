@@ -1,0 +1,198 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+header {
+    background-color: #333;
+    color: white;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#header-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f4f4f4;
+    padding: 10px;
+    border-bottom: 2px solid #ddd;
+}
+
+#header-controls span {
+    margin-right: 15px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #333;
+}
+
+#header-controls select {
+    padding: 5px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    color: #333;
+}
+
+/* Adjusted grid layout for better size distribution */
+main {
+    display: grid;
+    grid-template-columns: 2fr 3fr 2fr;
+    /* Adjusted column sizes */
+    gap: 20px;
+    padding: 20px;
+}
+
+/* Highlight the material row in the table */
+#property-table tr.material {
+    background-color: #f0f8ff;
+    /* Light blue background for emphasis */
+    font-weight: bold;
+    /* Make the text bold */
+    color: #333;
+    /* Ensure good contrast */
+}
+
+#visualization {
+    grid-column: 1 / 2;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+img {
+    display: block;
+    width: 100%;
+    height: auto;
+    cursor: pointer;
+    /* Indicate zoom functionality */
+}
+
+/* Ensure zoomed images are displayed properly */
+img.zoomed {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 1200px;
+    /* Fixed width for zoomed image */
+    height: auto;
+    /* Height adjusts automatically */
+    z-index: 1000;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    border: 2px solid #ddd;
+    background: white;
+}
+
+
+#properties {
+    grid-column: 2 / 3;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#kinematics {
+    grid-column: 3 / 4;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#kinematics video {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+    /* Ensure square video */
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: block;
+    margin: 0 auto;
+    /* Center the video */
+}
+
+/* Improved font styles for options */
+input[type="radio"],
+input[type="checkbox"] {
+    margin-right: 10px;
+    transform: scale(1.2);
+}
+
+label {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #333;
+}
+
+/* Table styling for better readability */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+table th {
+    background-color: hsl(0, 0%, 96%);
+    font-weight: bold;
+    text-align: left;
+    padding: 10px;
+    border-bottom: 2px solid #ddd;
+}
+
+table td {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+/* Highlight the material row in the table */
+#property-table tr.material-row {
+    background-color: #f0f8ff;
+    /* Light blue background for emphasis */
+    font-weight: bold;
+    /* Make the text bold */
+    color: #333;
+    /* Ensure good contrast */
+}
+
+.axis-arrow {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border-left: 10px solid var(--c);
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+    margin-right: 6px;
+    vertical-align: middle;
+}
+
+.color-dot {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 6px;
+    vertical-align: middle;
+}
+
+
+/* Footer alignment */
+footer {
+    text-align: center;
+    padding: 15px;
+    background-color: #333;
+    color: white;
+    font-size: 1rem;
+    border-top: 2px solid #444;
+}

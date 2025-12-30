@@ -1,0 +1,24 @@
+{
+  "sha256": "10273",
+  "asset_id": "10273",
+  "part_id": "2",
+  "physics_valid": "false",
+  "physics_reasons": [
+    "semantic"
+  ],
+  "kinematics_valid": "false",
+  "kinematics_reasons": [
+    "type"
+  ],
+  "motion_type": "contact_only",
+  "material_category": "leather",
+  "axis_choice": null,
+  "position_choice": null,
+  "motion_range": {
+    "start": 0,
+    "end": 3
+  },
+  "skip": false,
+  "reviewer_id": 10,
+  "timestamp": "2025-12-30T07:01:46.066Z"
+}
