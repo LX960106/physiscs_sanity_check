@@ -216,8 +216,8 @@ document.addEventListener("DOMContentLoaded", () => {
     let currentIndex = 0;
     let currentSha256 = null;
 
-    function fetchSha256List(reviewerId) {
-        return fetch(`/data/ids/${reviewerId}`) // Assuming an API endpoint that returns all sha256 IDs
+    function fetchSha256List(reviewerId, totalUserNum) {
+        return fetch(`/data/ids/${reviewerId}/${totalUserNum}`) // Assuming an API endpoint that returns all sha256 IDs
             .then(response => {
                 if (!response.ok) {
                     throw new Error("Failed to fetch sha256 list");
@@ -265,10 +265,39 @@ document.addEventListener("DOMContentLoaded", () => {
         const params = new URLSearchParams(window.location.search);
         const v = params.get("reviewer");
 
-        if (v === null) return -1;
+        // 默认值
+        let reviewerId = -1;
+        let totalUserNum = -1;
 
-        const id = parseInt(v, 10);
-        return Number.isNaN(id) ? -1 : id;
+        if (!v) {
+            return { reviewerId, totalUserNum };
+        }
+
+        // 期望格式: "10/20"
+        const parts = v.split("/");
+
+        if (parts.length !== 2) {
+            return { reviewerId, totalUserNum };
+        }
+
+        const rid = parseInt(parts[0], 10);
+        const total = parseInt(parts[1], 10);
+
+        if (
+            Number.isNaN(rid) ||
+            Number.isNaN(total) ||
+            rid < 1 ||
+            total < 1 ||
+            rid > total
+        ) {
+            return { reviewerId, totalUserNum };
+        }
+
+        reviewerId = rid;
+        totalUserNum = total;
+
+        return { reviewerId, totalUserNum };
+
     }
 
     function goToPrevious() {
@@ -570,7 +599,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     });
-    reviewerId = getReviewerId();
-    alert("Initializing reviewer ID: " + reviewerId);
-    fetchSha256List(reviewerId);
+    const { reviewerId, totalUserNum } = getReviewerId();
+    alert("Initializing reviewer ID: " + reviewerId + " / " + totalUserNum);
+    fetchSha256List(reviewerId, totalUserNum);
 });

@@ -8,17 +8,19 @@
   ],
   "kinematics_valid": "false",
   "kinematics_reasons": [
-    "type"
+    "axis",
+    "position",
+    "motion_range"
   ],
-  "motion_type": "contact_only",
-  "material_category": "leather",
-  "axis_choice": null,
-  "position_choice": null,
+  "motion_type": null,
+  "material_category": "plastic",
+  "axis_choice": "4",
+  "position_choice": "1",
   "motion_range": {
     "start": 0,
-    "end": 3
+    "end": 2.85
   },
   "skip": false,
-  "reviewer_id": 10,
-  "timestamp": "2025-12-30T07:01:46.066Z"
+  "reviewer_id": 2,
+  "timestamp": "2025-12-30T13:27:50.139Z"
 }
