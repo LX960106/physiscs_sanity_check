@@ -31,8 +31,8 @@ files
 
 ### 1.1 目录结构
 `data`目录下4个子目录：
-* `json`存储待标注的部件，文件命名方式：sha256(model_id)_sha256(unique_str).json，进行sha256 hash操作得到文件名。
-* `imgs` 和 `videos`存储`json`中需要的资源文件
+* `jsons`存储待标注的部件，文件命名方式：sha256(model_id)_sha256(unique_str).json，进行sha256 hash操作得到文件名。
+* `imgs` 和 `videos`存储`jsons`中需要的资源文件
 
 * `results` 目录存储标注结果，文件以.json存储，文件名同`json`目录文件名对应
 
