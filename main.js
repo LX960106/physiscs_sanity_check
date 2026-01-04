@@ -338,6 +338,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 const oriView = document.getElementById("ori-view");
                 const axisView = document.getElementById("axis-view");
                 const pivotView = document.getElementById("pivot-view");
+                const motionTypeSpan = document.getElementById("predicted-motion-type");
+                const motionTypeMap = {
+                    rotation: "Rotation",
+                    translation: "Translation",
+                    rigid: "Rigid Body",
+                    contact_only: "Contact-only"
+                };
+                motionTypeSpan.textContent =
+                    motionTypeMap[data.motion_type] || "Unknown";
 
                 axisView.src = data.axis_pth;
                 axisView.alt = `Motion axis visualization for ${data.name}`;
@@ -372,7 +381,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 const properties = [
                     { name: "Part Label", value: data.label, class: "part-label" },
-                    { name: "Part Name", value: data.name, class: "part-name" },
+                    { name: "Part Name", value: data.part_name, class: "part-name" },
                     { name: "Material", value: data.material, class: "material" },
                     { name: "Density", value: `${data.density} g/cm^3`, class: "density" },
                     { name: "Young's Modulus", value: `${data.young} GPa`, class: "youngs-modulus" },

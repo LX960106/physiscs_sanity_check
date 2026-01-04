@@ -3,7 +3,7 @@
     "type_name": "partnet",
     "asset_id": "10273",
     "label": 2,
-    "name": "Screen Frame",
+    "part_name": "Screen Frame",
     "material": "metal/Aluminum_Alloy_6061",
     "density": "2.70",
     "young": 69.0,
@@ -21,5 +21,6 @@
     "Basic_description": "Aluminum alloy bezel and lid structure around the display, approx. 31*19*0.5 cm.",
     "Functional_description": "Holds and protects the screen, provides stiffness and mounting points to the hinge shafts.",
     "Movement_description": "Rotates about the two hinge shafts relative to the base, allowing opening/closing of the lid with controlled friction and damping.",
-    "Grasped_description": "Users typically grasp the top or sides of the frame to open or close the laptop."
+    "Grasped_description": "Users typically grasp the top or sides of the frame to open or close the laptop.",
+    "motion_type": "rotation"
 }

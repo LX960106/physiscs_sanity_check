@@ -9,7 +9,7 @@ app.use(express.static(path.join(__dirname)));
 app.use(express.json());
 app.use("/videos", express.static(path.join(__dirname, "data", "videos")));
 app.use("/imgs", express.static(path.join(__dirname, "data", "imgs")));
-const jsonDir = path.join(__dirname, "data", "json");
+const jsonDir = path.join(__dirname, "data", "jsons");
 const resultDir = path.join(__dirname, "data", "results");
 console.log("JSON Directory:", jsonDir);
 // Ensure JSON directory exists, or throw an error

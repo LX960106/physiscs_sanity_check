@@ -142,6 +142,12 @@
             </div>
 
             <div>
+                <div style="margin-top:12px;margin-bottom:6px; color:#555;">
+                    <b>Predicted Motion Type:</b>
+                    <span id="predicted-motion-type" style="font-style: italic;">
+                        Unknown
+                    </span>
+                </div>
                 <label>Kinematics Validity:</label>
                 <input type="radio" name="kinematics-valid" value="true"> Reasonable
                 <input type="radio" name="kinematics-valid" value="false"> Unreasonable
@@ -155,6 +161,8 @@
                     counterintuitive)<br>
                     <input type="checkbox" name="kinematics-reason" value="position"> Motion Position (e.g., rotation
                     center or translation start point incorrect)<br>
+                    <input type="checkbox" name="kinematics-reason" value="direction">
+                    Motion Direction (reversed)<br>
                     <input type="checkbox" name="kinematics-reason" value="motion_range">
                     Motion Range (duration is unreasonable)<br>
                     <!-- <input type="checkbox" name="kinematics-reason" value="behavior"> Physical Behavior (e.g., defies
