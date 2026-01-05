@@ -12,6 +12,15 @@ app.use("/imgs", express.static(path.join(__dirname, "data", "imgs")));
 const jsonDir = path.join(__dirname, "data", "jsons");
 const resultDir = path.join(__dirname, "data", "results");
 console.log("JSON Directory:", jsonDir);
+
+app.get("/zh", (req, res) => {
+    res.sendFile(path.join(__dirname, "public/zh/index.html"));
+});
+
+app.get("/en", (req, res) => {
+    res.sendFile(path.join(__dirname, "public/en/index.html"));
+});
+
 // Ensure JSON directory exists, or throw an error
 if (!fs.existsSync(jsonDir)) {
     console.error("JSON directory does not exist. Please prepare the directory and restart the server.");

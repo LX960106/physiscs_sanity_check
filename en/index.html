@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Physics Sanity Check Tool</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <header>
+        <h1>Physics Sanity Check Tool</h1>
+        <div id="header-controls">
+            <span>Dataset: <span id="dataset">Loading...</span></span>
+            <span>Type Name: <span id="type-name">Loading...</span></span>
+            <span>Asset ID: <span id="asset-id">Loading...</span></span>
+            <span>Part ID: <span id="part-id">Loading...</span></span>
+            <span>Part Progress: <span id="part-progress">0/0</span></span>
+            <!-- <span>Asset Progress: <span id="asset-progress">0/0</span></span> -->
+            <button id="prev-button">← Previous</button>
+            &nbsp;&nbsp;
+            <button id="skip-button">Skip</button>
+        </div>
+    </header>
+    <main>
+        <section id="visualization">
+            <h2>Visualization</h2>
+            <img id="global-view" class="zoomable" src="" alt="Global View">
+            <img id="ori-view" class="zoomable" src="" alt="Original View">
+        </section>
+        <section id="properties">
+            <h2>Properties</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Property</th>
+                        <th>Value</th>
+                        <th>Unit</th>
+                    </tr>
+                </thead>
+                <tbody id="property-table">
+                    <!-- Dynamic content will be inserted here -->
+                </tbody>
+            </table>
+            <div>
+                <label>Physics Validity:</label>
+                <input type="radio" name="physics-valid" value="true"> Reasonable
+                <input type="radio" name="physics-valid" value="false"> Unreasonable
+                <input type="radio" name="physics-valid" value="unknown"> Unknown
+                <div id="physics-reasons" style="display: none; margin-top: 10px;">
+                    <label>Unreasonable Reasons (select all that apply):</label><br>
+                    <input type="checkbox" name="physics-reason" value="semantic"> Semantic Unreasonableness (does not
+                    match intuition)<br>
+                    <input type="checkbox" name="physics-reason" value="other"> Other / Cannot Judge<br>
+                </div>
+            </div>
+            <!-- Material Category Correction Panel -->
+            <div id="material-category-panel"
+                style="display:none; margin-top:10px; padding-left:15px; border-left:3px solid #ccc;">
+
+                <label><b>Correct Material Category (required):</b></label><br>
+
+                <label>
+                    <input type="radio" name="material-category" value="metal">
+                    Metal
+                </label><br>
+
+                <label>
+                    <input type="radio" name="material-category" value="plastic">
+                    Plastic
+                </label><br>
+
+                <label>
+                    <input type="radio" name="material-category" value="fabric">
+                    Fabric
+                </label><br>
+
+                <label>
+                    <input type="radio" name="material-category" value="leather">
+                    Leather
+                </label><br>
+
+                <label>
+                    <input type="radio" name="material-category" value="foam">
+                    Foam
+                </label><br>
+
+                <label>
+                    <input type="radio" name="material-category" value="rubber">
+                    Rubber
+                </label><br>
+
+                <label>
+                    <input type="radio" name="material-category" value="glass">
+                    Glass
+                </label><br>
+
+                <label>
+                    <input type="radio" name="material-category" value="stone">
+                    Stone
+                </label><br>
+
+                <label>
+                    <input type="radio" name="material-category" value="ceramics">
+                    Ceramics
+                </label><br>
+
+                <label>
+                    <input type="radio" name="material-category" value="wood">
+                    Wood
+                </label><br>
+
+                <label>
+                    <input type="radio" name="material-category" value="concrete">
+                    Concrete
+                </label><br>
+
+                <label>
+                    <input type="radio" name="material-category" value="other">
+                    Other (organic / liquid / gel / food / etc.)
+                </label>
+            </div>
+
+        </section>
+        <section id="kinematics">
+            <h2>Kinematics</h2>
+
+            <video id="motion-video" controls loop muted style="width: 500px; height: 500px;">
+                <source id="video-source" src="" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <div id="no-motion-hint" style="width: 500px; height: 500px; 
+                display: none; 
+                align-items: center; 
+                margin: 0 auto;
+                justify-content: center;
+                border: 1px dashed #aaa;
+                color: #666;
+                font-style: italic;">
+                No video detected for this part.
+            </div>
+
+            <div>
+                <div style="margin-top:12px;margin-bottom:6px; color:#555;">
+                    <b>Predicted Motion Type:</b>
+                    <span id="predicted-motion-type" style="font-style: italic;">
+                        Unknown
+                    </span>
+                </div>
+                <label>Kinematics Validity:</label>
+                <input type="radio" name="kinematics-valid" value="true"> Reasonable
+                <input type="radio" name="kinematics-valid" value="false"> Unreasonable
+                <input type="radio" name="kinematics-valid" value="unknown"> Unknown
+                <div id="kinematics-reasons" style="display: none; margin-top: 10px;">
+                    <label>Unreasonable Reasons (select all that apply):</label><br>
+                    <input type="checkbox" name="kinematics-reason" value="type"> Motion Type (e.g., static part
+                    predicted as movable; should rotate but
+                    translates)<br>
+                    <input type="checkbox" name="kinematics-reason" value="axis"> Motion Axis (direction or posture
+                    counterintuitive)<br>
+                    <input type="checkbox" name="kinematics-reason" value="position"> Motion Position (e.g., rotation
+                    center or translation start point incorrect)<br>
+                    <input type="checkbox" name="kinematics-reason" value="direction">
+                    Motion Direction (reversed)<br>
+                    <input type="checkbox" name="kinematics-reason" value="composition"> Motion Propagation Error
+                    (attached parts move incorrectly)<br>
+                    <input type="checkbox" name="kinematics-reason" value="motion_range">
+                    Motion Range (duration is unreasonable)<br>
+                    <!-- <input type="checkbox" name="kinematics-reason" value="behavior"> Physical Behavior (e.g., defies
+                    gravity intuition or penetrates objects)<br> -->
+                </div>
+            </div>
+            <!-- Motion Type Correction Panel -->
+            <div id="motion-type-panel"
+                style="display:none; margin-top:10px; padding-left:15px; border-left:3px solid #ccc;">
+                <label><b>Correct Motion Type (required):</b></label><br>
+
+                <label>
+                    <input type="radio" name="motion-type" value="rotation">
+                    Rotation
+                </label><br>
+
+                <label>
+                    <input type="radio" name="motion-type" value="translation">
+                    Translation
+                </label><br>
+
+                <label>
+                    <input type="radio" name="motion-type" value="contact_only">
+                    Contact-only
+                </label><br>
+
+                <label>
+                    <input type="radio" name="motion-type" value="rigid">
+                    Rigid Body
+                </label>
+            </div>
+            <!-- Motion Axis and Position Correction Panels -->
+            <div id="axis-panel" style="display:none;">
+                <div>
+                    <b>Candidate Motion Axes</b>
+                </div>
+
+                <img id="axis-view" class="zoomable" src="" width="420"><br><br>
+
+                <!-- 10 个 xyz 轴 -->
+                <div>
+                    <b>Primitive Axes</b><br>
+                    <label>
+                        <input type="radio" name="axis-choice" value="7">
+                        <span class="axis-arrow" style="--c: red;"></span> Red
+                    </label><br>
+
+                    <label>
+                        <input type="radio" name="axis-choice" value="8">
+                        <span class="axis-arrow" style="--c: green;"></span> Green
+                    </label><br>
+
+                    <label>
+                        <input type="radio" name="axis-choice" value="9">
+                        <span class="axis-arrow" style="--c: blue;"></span> Blue
+                    </label>
+
+                    <!-- 重复到 axis_9 -->
+                </div>
+
+                <br>
+
+                <!-- 7 个平面拟合轴 -->
+                <div>
+                    <b>Fitted Plane Axes</b><br>
+                    <label>
+                        <input type="radio" name="axis-choice" value="0">
+                        <span class="axis-arrow" style="--c: yellow;"></span> Yellow
+                    </label><br>
+
+                    <label>
+                        <input type="radio" name="axis-choice" value="1">
+                        <span class="axis-arrow" style="--c: orange;"></span> Orange
+                    </label><br>
+
+                    <label>
+                        <input type="radio" name="axis-choice" value="2">
+                        <span class="axis-arrow" style="--c: purple;"></span> Purple
+                    </label><br>
+
+                    <label>
+                        <input type="radio" name="axis-choice" value="3">
+                        <span class="axis-arrow" style="--c: cyan;"></span> Cyan
+                    </label><br>
+
+                    <label>
+                        <input type="radio" name="axis-choice" value="4">
+                        <span class="axis-arrow" style="--c: magenta;"></span> Magenta
+                    </label><br>
+
+                    <label>
+                        <input type="radio" name="axis-choice" value="5">
+                        <span class="axis-arrow" style="--c: #555;"></span> Dark Gray
+                    </label><br>
+
+                    <label>
+                        <input type="radio" name="axis-choice" value="6">
+                        <span class="axis-arrow" style="--c: brown;"></span> Brown
+                    </label><br>
+                    <label>
+                        <input type="radio" name="axis-choice" value="-1">
+                        <span class="axis-arrow" style="--c: black;"></span> Black (No Fit)
+                    </label><br>
+                    <!-- 到 plane_6 -->
+                </div>
+            </div>
+
+            <div id="position-panel" style="display:none;">
+                <div>
+                    <b>Candidate Motion Positions</b>
+                </div>
+
+                <img id="pivot-view" class="zoomable" src="" width="420"><br><br>
+
+                <div>
+                    <label>
+                        <input type="radio" name="position-choice" value="0">
+                        <span class="color-dot" style="background:red;"></span> Red
+                    </label><br>
+
+                    <label>
+                        <input type="radio" name="position-choice" value="1">
+                        <span class="color-dot" style="background:green;"></span> Green
+                    </label><br>
+
+                    <label>
+                        <input type="radio" name="position-choice" value="2">
+                        <span class="color-dot" style="background:blue;"></span> Blue
+                    </label><br>
+
+                    <label>
+                        <input type="radio" name="position-choice" value="3">
+                        <span class="color-dot" style="background:yellow;"></span> Yellow
+                    </label><br>
+
+                    <label>
+                        <input type="radio" name="position-choice" value="4">
+                        <span class="color-dot" style="background:purple;"></span> Purple
+                    </label><br>
+
+                    <label>
+                        <input type="radio" name="position-choice" value="5">
+                        <span class="color-dot" style="background:brown;"></span> Brown
+                    </label><br>
+                    <label>
+                        <input type="radio" name="position-choice" value="-1">
+                        <span class="color-dot" style="background:black;"></span> Black (No Fit)
+                    </label>
+                </div>
+            </div>
+
+
+            <div id="motion-range-panel" style="display:none; margin-top:10px;">
+                <label>Reasonable Motion Time Range (seconds/degrees/cm):</label><br>
+
+                Start:
+                <input type="number" id="motion-start" step="0.01" min="0" style="width:80px;" value="0">
+
+                &nbsp; End:
+                <input type="number" id="motion-end" step="0.01" min="0" style="width:80px;" value="-1">
+
+                <div style="font-size: 12px; color: #666; margin-top: 5px;">
+                    Select the time interval where the motion looks reasonable.
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <button id="submit-button">Submit and Next</button>
+    </footer>
+    <script src="main.js"></script>
+</body>
+
+</html>

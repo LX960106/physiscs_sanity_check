@@ -10,11 +10,26 @@ document.addEventListener("DOMContentLoaded", () => {
     const motionEndInput = document.getElementById("motion-end");
     const motionVideo = document.getElementById("motion-video");
     let hasMotionVideo = true;
-
+    let isrigid = false;
     const axisPanel = document.getElementById("axis-panel");
     const positionPanel = document.getElementById("position-panel");
     const motionTypePanel = document.getElementById("motion-type-panel");
     const materialPanel = document.getElementById("material-category-panel");
+
+    const MATERIAL_CATEGORY_ZH = {
+        metal: "金属",
+        plastic: "塑料",
+        fabric: "织物",
+        leather: "皮革",
+        foam: "泡沫",
+        rubber: "橡胶",
+        glass: "玻璃",
+        stone: "石材",
+        ceramics: "陶瓷",
+        wood: "木材",
+        concrete: "混凝土",
+        other: "其他"
+    };
 
     // function updateMotionRangeVisibility() {
     //     const kinValid = document.querySelector("input[name='kinematics-valid']:checked")?.value;
@@ -27,7 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
     //     } else {
     //         motionRangePanel.style.display = "none";
     //         motionStartInput.value = "0";
-    //         motionEndInput.value = "3";
+    //         motionEndInput.value = "-1";
     //     }
     // }
 
@@ -36,7 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
             "input[name='kinematics-reason'][value='type']"
         );
 
-        if (value === "false" && !hasMotionVideo) {
+        if (value === "false" && isrigid) {
             // 没视频 + 不合理 → 默认 motion type
             typeCheckbox.checked = true;
 
@@ -68,16 +83,24 @@ document.addEventListener("DOMContentLoaded", () => {
             document.querySelectorAll("input[name='position-choice']").forEach(i => i.checked = false);
             document.querySelectorAll("input[name='motion-type']").forEach(i => i.checked = false);
             motionStartInput.value = "0";
-            motionEndInput.value = "3";
+            motionEndInput.value = "-1";
             return;
         }
-
-        if (reasons.includes("motion_range") && motionVideo.style.display !== "none") {
+        if (hasMotionVideo === false) {
+            // 没视频，直接隐藏 motion direction 和 composition
+            document.querySelector("input[name='kinematics-reason'][value='direction']").disabled = true;
+            document.querySelector("input[name='kinematics-reason'][value='composition']").disabled = true;
+        } else {
+            document.querySelector("input[name='kinematics-reason'][value='direction']").disabled = false;
+            document.querySelector("input[name='kinematics-reason'][value='composition']").disabled = false;
+        }
+        // reasons.includes("motion_range") && motionVideo.style.display !== "none"
+        if (reasons.includes("motion_range")) {
             motionRangePanel.style.display = "block";
         } else {
             motionRangePanel.style.display = "none";
             motionStartInput.value = "0";
-            motionEndInput.value = "3";
+            motionEndInput.value = "-1";
         }
 
         if (reasons.includes("axis")) {
@@ -102,12 +125,12 @@ document.addEventListener("DOMContentLoaded", () => {
             motionTypePanel.style.display = "none";
             document.querySelectorAll("input[name='motion-type']").forEach(i => i.checked = false);
         }
-        document.querySelectorAll("input[name='kinematics-reason']").forEach(i => {
-            if (i.value !== "type") {
-                i.disabled = typeChecked;
-                if (typeChecked) i.checked = false;
-            }
-        });
+        // document.querySelectorAll("input[name='kinematics-reason']").forEach(i => {
+        //     if (i.value !== "type") {
+        //         i.disabled = typeChecked;
+        //         if (typeChecked) i.checked = false;
+        //     }
+        // });
     }
 
 
@@ -124,7 +147,7 @@ document.addEventListener("DOMContentLoaded", () => {
         );
 
         typeCheckbox.addEventListener("change", () => {
-            if (typeCheckbox.checked) {
+            if (typeCheckbox.checked && isrigid) {
                 // 勾选 Motion Type → 禁用其他
                 otherCheckboxes.forEach(cb => {
                     cb.checked = false;
@@ -250,7 +273,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // Motion range
         motionRangePanel.style.display = "none";
         motionStartInput.value = "0";
-        motionEndInput.value = "3";
+        motionEndInput.value = "-";
 
         const typeCheckbox = document.querySelector(
             "input[name='kinematics-reason'][value='type']"
@@ -302,16 +325,32 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function goToPrevious() {
         if (currentIndex <= 0) {
-            alert("This is the first sample.");
+            alert("这是第一个样本，无法返回上一个。");
             return;
         }
         currentIndex--;
         loadData();
     }
+    function materialToChinese(material) {
+        if (!material || typeof material !== "string") return "未知";
+
+        // 取大类（斜杠前）
+        const parts = material.split("/");
+
+        const category = parts[0]?.toLowerCase();
+        const subtype = parts[1]; // 你说的 material.split("/")[1]
+        const categoryZh = MATERIAL_CATEGORY_ZH[category] || "其他";
+
+        if (subtype) {
+            return `${categoryZh} / ${subtype}`;
+        } else {
+            return categoryZh;
+        }
+    }
 
     function loadData() {
         if (currentIndex >= sha256List.length) {
-            alert("All samples have been annotated.");
+            alert("所有样本已标注。感谢您的贡献！");
             currentIndex--;
             return;
         }
@@ -340,11 +379,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 const pivotView = document.getElementById("pivot-view");
                 const motionTypeSpan = document.getElementById("predicted-motion-type");
                 const motionTypeMap = {
-                    C: "Rotation",
-                    B: "Translation",
-                    D: "Rigid Body",
-                    A: "Contact-only"
+                    C: "旋转",
+                    B: "平移",
+                    D: "刚体",
+                    A: "仅接触"
                 };
+                if (data.motion_type === "D" || data.motion_type === "A") {
+                    isrigid = true;
+                } else {
+                    isrigid = false;
+                }
                 motionTypeSpan.textContent =
                     motionTypeMap[data.motion_type] || "Unknown";
 
@@ -379,15 +423,22 @@ document.addEventListener("DOMContentLoaded", () => {
                 const propertyTable = document.getElementById("property-table");
                 propertyTable.innerHTML = ""; // Clear existing rows
 
+                const dimText = Array.isArray(data.dimension)
+                    ? `${data.dimension.join(" × ")} cm`
+                    : "N/A";
+
+
                 const properties = [
-                    { name: "Part Label", value: data.label, class: "part-label" },
-                    { name: "Part Name", value: data.part_name, class: "part-name" },
-                    { name: "Material", value: data.material, class: "material" },
-                    { name: "Density", value: `${data.density} g/cm^3`, class: "density" },
-                    { name: "Young's Modulus", value: `${data.young} GPa`, class: "youngs-modulus" },
-                    { name: "Hardness", value: `${data.hardness} HV`, class: "hardness" },
-                    { name: "Poisson's Ratio", value: data.poisson, class: "poisson-ratio" },
-                    { name: "Friction Coefficient", value: data.friction, class: "friction-coefficient" }
+                    { name: "物体名称", value: data.object_name, class: "object-name" },
+                    { name: "物体尺寸", value: dimText, class: "object-dimension" },
+                    { name: "部件标签", value: data.label, class: "part-label" },
+                    { name: "部件名称", value: data.part_name, class: "part-name" },
+                    { name: "材质", value: materialToChinese(data.material), class: "material" },
+                    { name: "密度", value: `${data.density} g/cm^3`, class: "density" },
+                    { name: "杨氏模量", value: `${data.young} GPa`, class: "youngs-modulus" },
+                    { name: "硬度", value: `${data.hardness} HV`, class: "hardness" },
+                    { name: "泊松比", value: data.poisson, class: "poisson-ratio" },
+                    { name: "摩擦系数", value: data.friction, class: "friction-coefficient" }
                 ];
 
                 properties.forEach(prop => {
@@ -428,7 +479,7 @@ document.addEventListener("DOMContentLoaded", () => {
         )?.value;
 
         if (!physicsValid || !kinematicsValid) {
-            alert("Please complete all required fields before submitting.");
+            alert("请在提交前完成所有必填字段。");
             return false;
         }
 
@@ -438,12 +489,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 "input[name='physics-reason']:checked"
             )).map(i => i.value);
             if (physicsReasons.length === 0) {
-                alert("Please select at least one Physics Unreasonable Reason.");
+                alert("请至少选择一个物理不合理原因。");
                 return false;
             } else if (physicsReasons.includes("semantic")) {
                 const materialSelected = document.querySelector("input[name='material-category']:checked");
                 if (!materialSelected) {
-                    alert("Please select a correct material category for semantic unreasonableness.");
+                    alert("请为语义不合理选择正确的材料类别。");
                     return false;
                 }
             }
@@ -457,7 +508,7 @@ document.addEventListener("DOMContentLoaded", () => {
             ).map(i => i.value);
 
             if (reasons.length === 0) {
-                alert("Please select at least one Kinematics Unreasonable Reason.");
+                alert("请至少选择一个运动学不合理原因。");
                 return false;
             }
             if (reasons.includes("type")) {
@@ -465,7 +516,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     "input[name='motion-type']:checked"
                 );
                 if (!motionType) {
-                    alert("Please select a candidate motion type.");
+                    alert("请为运动类型选择一个候选类型。");
                     return false;
                 }
             }
@@ -475,7 +526,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     "input[name='axis-choice']:checked"
                 );
                 if (!axisChoice) {
-                    alert("Please select a candidate motion axis.");
+                    alert("请为运动轴选择一个候选轴。");
                     return false;
                 }
             }
@@ -486,7 +537,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     "input[name='position-choice']:checked"
                 );
                 if (!positionChoice) {
-                    alert("Please select a candidate motion position cluster.");
+                    alert("请为运动位置选择一个候选位置簇。");
                     return false;
                 }
             }
@@ -501,7 +552,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 );
 
                 if (Number.isNaN(start) || Number.isNaN(end) || end <= start) {
-                    alert("Please provide a valid motion range (end > start).");
+                    alert("请提供一个有效的运动范围 (end > start)。");
                     return false;
                 }
             }
@@ -530,7 +581,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const kinematicsReasons = Array.from(document.querySelectorAll("input[name='kinematics-reason']:checked"))
             .map(checkbox => checkbox.value);
 
-        let motionRange = { start: 0, end: 3 };
+        let motionRange = { start: 0, end: -1 };
         if (
             kinematicsValid === "false" &&
             kinematicsReasons.includes("motion_range")
@@ -570,19 +621,21 @@ document.addEventListener("DOMContentLoaded", () => {
         })
             .then(response => {
                 if (!response.ok) {
-                    throw new Error("Failed to submit result");
+
+                    throw new Error("提交结果失败！");
                 }
                 return response.json();
             })
             .then(info => {
-                alert(info.message);
+                alert("结果保存成功！" + info.message);
                 // Load next data
                 currentIndex++;
                 loadData();
             })
             .catch(error => {
+
                 console.error("Error submitting result:", error);
-                alert("Failed to submit result. Please try again.");
+                alert("提交结果失败，请重试！");
             });
     }
 
@@ -601,6 +654,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
     const { reviewerId, totalUserNum } = getReviewerId();
-    alert("Initializing reviewer ID: " + reviewerId + " / " + totalUserNum);
+    alert("初始化审查者 ID: " + reviewerId + " / " + totalUserNum);
     fetchSha256List(reviewerId, totalUserNum);
 });
