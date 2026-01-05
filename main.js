@@ -340,10 +340,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 const pivotView = document.getElementById("pivot-view");
                 const motionTypeSpan = document.getElementById("predicted-motion-type");
                 const motionTypeMap = {
-                    rotation: "Rotation",
-                    translation: "Translation",
-                    rigid: "Rigid Body",
-                    contact_only: "Contact-only"
+                    C: "Rotation",
+                    B: "Translation",
+                    D: "Rigid Body",
+                    A: "Contact-only"
                 };
                 motionTypeSpan.textContent =
                     motionTypeMap[data.motion_type] || "Unknown";

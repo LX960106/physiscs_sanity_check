@@ -15,7 +15,7 @@
     "global_img_pth": "/imgs/1.png",
     "ori_img_pth": "/imgs/view_4.png",
     "video_pth": "",
-    "motion_type": "translation",
+    "motion_type": "B",
     "Basic_description": "Solid oak drawer face panel, approx. 30*16*1.8 cm, for the right-hand drawer.",
     "Functional_description": "Forms the visible front of the right drawer; supports the pull and provides hand contact to open/close.",
     "Movement_description": "Slides in and out of the console body on runners as a complete drawer assembly, guided by the face frame.",

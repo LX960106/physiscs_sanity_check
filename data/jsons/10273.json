@@ -22,5 +22,5 @@
     "Functional_description": "Holds and protects the screen, provides stiffness and mounting points to the hinge shafts.",
     "Movement_description": "Rotates about the two hinge shafts relative to the base, allowing opening/closing of the lid with controlled friction and damping.",
     "Grasped_description": "Users typically grasp the top or sides of the frame to open or close the laptop.",
-    "motion_type": "rotation"
+    "motion_type": "C"
 }
