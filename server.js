@@ -91,7 +91,9 @@ app.get("/data/ids/:reviewerId/:totalUserNum", (req, res) => {
 
 // API to fetch data by sha256
 app.get("/data/:sha256", (req, res) => {
+
     const { sha256 } = req.params;
+    console.log("JSON Directory Accessed:", sha256);
     const jsonFilePath = path.join(jsonDir, `${sha256}.json`);
 
     fs.readFile(jsonFilePath, "utf8", (err, data) => {
@@ -99,7 +101,9 @@ app.get("/data/:sha256", (req, res) => {
             res.status(404).send({ error: "Data not found" });
             return;
         }
-        res.send(JSON.parse(data));
+        res.send(JSON.parse(data.replace(/: NaN/g, ': null')
+            .replace(/: Infinity/g, ': null')
+            .replace(/: -Infinity/g, ': null')));
     });
 });
 
