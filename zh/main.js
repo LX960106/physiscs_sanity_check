@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
         plastic: "塑料",
         fabric: "织物",
         leather: "皮革",
-        foam: "泡沫",
+        foam: "海绵-泡沫",
         rubber: "橡胶",
         glass: "玻璃",
         stone: "石材",
