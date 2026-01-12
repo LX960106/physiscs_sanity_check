@@ -11,6 +11,9 @@ app.use("/videos", express.static(path.join(__dirname, "data", "videos")));
 app.use("/imgs", express.static(path.join(__dirname, "data", "imgs")));
 const jsonDir = path.join(__dirname, "data", "jsons");
 const resultDir = path.join(__dirname, "data", "results");
+const checkResultDir = path.join(__dirname, "data", "check_results");
+const crypto = require("crypto");
+
 console.log("JSON Directory:", jsonDir);
 
 app.get("/zh", (req, res) => {
@@ -21,13 +24,127 @@ app.get("/en", (req, res) => {
     res.sendFile(path.join(__dirname, "public/en/index.html"));
 });
 
+app.get("/check", (req, res) => {
+    res.sendFile(path.join(__dirname, "public/check/index.html"));
+});
+
+// app.get("/check/ids/:reviewerId/:totalUserNum", (req, res) => {
+//     const reviewerId = parseInt(req.params.reviewerId);
+//     const totalUserNum = parseInt(req.params.totalUserNum);
+//     fs.readdir(resultDir, (err, files) => {
+//         if (err) {
+//             return res.status(500).send({ error: "Failed to read result dir" });
+//         }
+//         const ids = files
+//             .filter(f => f.endsWith(".json"))
+//             .map(f => path.basename(f, ".json"));
+//         res.send(ids);
+//     });
+// });
+
+app.get("/check/result/:sha256", (req, res) => {
+    const p = path.join(resultDir, `${req.params.sha256}.json`);
+    if (!fs.existsSync(p)) {
+        return res.status(404).send({ error: "No result" });
+    }
+    res.send(JSON.parse(fs.readFileSync(p, "utf8")));
+});
+
+app.get("/check/ids/:reviewerId/:totalUserNum", (req, res) => {
+    const reviewerId = parseInt(req.params.reviewerId);
+    const totalUserNum = parseInt(req.params.totalUserNum);
+    if (
+        isNaN(reviewerId) ||
+        isNaN(totalUserNum) ||
+        reviewerId < 1 ||
+        reviewerId > totalUserNum
+    ) {
+        return res.status(400).send({ error: "Invalid reviewerId or totalUserNum" });
+    }
+
+    const reviewerIndex = reviewerId - 1;
+
+    // 1️⃣ 先读 check_results，收集已经 check 过的
+    fs.readdir(checkResultDir, (err, checkFiles) => {
+        if (err) {
+            console.error("Error reading check result directory:", err);
+            return res.status(500).send({ error: "Failed to read check result directory" });
+        }
+
+        const checkedSet = new Set(
+            checkFiles
+                .filter(f => f.endsWith(".json"))
+                .map(f => path.basename(f, ".json"))
+        );
+
+        // 2️⃣ 再读 resultDir（已标注但未 check 的池子）
+        fs.readdir(resultDir, (err, files) => {
+            if (err) {
+                console.error("Error reading result directory:", err);
+                return res.status(500).send({ error: "Failed to read result directory" });
+            }
+
+            const assignedIds = [];
+
+            files
+                .filter(file => file.endsWith(".json"))
+                .forEach(file => {
+                    const baseName = path.basename(file, ".json");
+
+                    // 已经 check 过的直接跳过
+                    if (checkedSet.has(baseName)) return;
+
+                    // sha256 前 8 位 hex → int
+                    const hashPrefix = baseName.slice(0, 8);
+                    const hashInt = parseInt(hashPrefix, 16);
+                    if (isNaN(hashInt)) return;
+
+                    const modVal = hashInt % totalUserNum;
+
+                    if (modVal === reviewerIndex) {
+                        assignedIds.push(baseName);
+                    }
+                });
+
+            res.send(assignedIds);
+        });
+    });
+});
+
+
+app.post("/check/submit", (req, res) => {
+    const {
+        sha256,
+        check_decision,
+        check_reviewer_id,
+        check_timestamp
+    } = req.body;
+
+    if (!sha256 || !check_decision) {
+        return res.status(400).send({ error: "Invalid payload" });
+    }
+
+    const out = {
+        sha256,
+        check_decision,           // accept / reject
+        check_reviewer_id,
+        check_timestamp
+    };
+
+    const savePath = path.join(checkResultDir, `${sha256}.json`);
+    fs.writeFileSync(savePath, JSON.stringify(out, null, 2));
+    res.send({ status: "ok" });
+});
+
+
+
+
 // Ensure JSON directory exists, or throw an error
 if (!fs.existsSync(jsonDir)) {
     console.error("JSON directory does not exist. Please prepare the directory and restart the server.");
     process.exit(1);
 }
 // API to fetch all sha256 IDs
-const crypto = require("crypto");
 app.get("/data/ids/:reviewerId/:totalUserNum", (req, res) => {
     const reviewerId = parseInt(req.params.reviewerId);
     const totalUserNum = parseInt(req.params.totalUserNum);
@@ -93,7 +210,7 @@ app.get("/data/ids/:reviewerId/:totalUserNum", (req, res) => {
 app.get("/data/:sha256", (req, res) => {
 
     const { sha256 } = req.params;
-    console.log("JSON Directory Accessed:", sha256);
+    // console.log("JSON Directory Accessed:", sha256);
     const jsonFilePath = path.join(jsonDir, `${sha256}.json`);
 
     fs.readFile(jsonFilePath, "utf8", (err, data) => {

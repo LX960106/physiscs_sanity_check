@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Physics Sanity Check Tool</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <header>
+        <h1>Physics Sanity Check Tool (检查)</h1>
+        <div id="header-controls">
+            <span>数据集: <span id="dataset">Loading...</span></span>
+            <span>类型号: <span id="type-name">Loading...</span></span>
+            <span>资产ID: <span id="asset-id">Loading...</span></span>
+            <span>部件ID: <span id="part-id">Loading...</span></span>
+            <span>标注进度: <span id="part-progress">0/0</span></span>
+            <!-- <span>Asset Progress: <span id="asset-progress">0/0</span></span> -->
+            <button id="prev-button">← 上一个</button>
+            &nbsp;&nbsp;
+            <button id="skip-button">跳过</button>
+        </div>
+    </header>
+    <main>
+        <section id="visualization">
+            <h2>标注资产可视化</h2>
+            <img id="global-view" class="zoomable" src="" alt="Global View">
+            <img id="ori-view" class="zoomable" src="" alt="Original View">
+        </section>
+        <section id="properties">
+            <h2>基础物理属性</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>属性</th>
+                        <th>值</th>
+                        <th>单位</th>
+                    </tr>
+                </thead>
+                <tbody id="property-table">
+                    <!-- Dynamic content will be inserted here -->
+                </tbody>
+            </table>
+            <div>
+                <label>基础物理属性有效性:</label>
+                <input type="radio" name="physics-valid" value="true"> 合理
+                <input type="radio" name="physics-valid" value="false"> 不合理
+                <input type="radio" name="physics-valid" value="unknown"> 未知
+                <div id="physics-reasons" style="display: none; margin-top: 10px;">
+                    <label>不合理原因 (可多选):</label><br>
+                    <input type="checkbox" name="physics-reason" value="semantic"> 语义不合理 (材质不符合直觉)<br>
+                    <input type="checkbox" name="physics-reason" value="other"> 其他 / 无法判断<br>
+                </div>
+            </div>
+            <!-- Material Category Correction Panel -->
+            <div id="material-category-panel"
+                style="display:none; margin-top:10px; padding-left:15px; border-left:3px solid #ccc;">
+
+                <label><b>正确材质类别（必须）:</b></label><br>
+
+                <label>
+                    <input type="radio" name="material-category" value="metal">
+                    金属
+                </label><br>
+
+                <label>
+                    <input type="radio" name="material-category" value="plastic">
+                    塑料
+                </label><br>
+
+                <label>
+                    <input type="radio" name="material-category" value="fabric">
+                    织物
+                </label><br>
+
+                <label>
+                    <input type="radio" name="material-category" value="leather">
+                    皮革
+                </label><br>
+
+                <label>
+                    <input type="radio" name="material-category" value="foam">
+                    海绵-泡沫
+                </label><br>
+
+                <label>
+                    <input type="radio" name="material-category" value="rubber">
+                    橡胶
+                </label><br>
+
+                <label>
+                    <input type="radio" name="material-category" value="glass">
+                    玻璃
+                </label><br>
+
+                <label>
+                    <input type="radio" name="material-category" value="stone">
+                    石材
+                </label><br>
+
+                <label>
+                    <input type="radio" name="material-category" value="ceramics">
+                    陶瓷
+                </label><br>
+
+                <label>
+                    <input type="radio" name="material-category" value="wood">
+                    木材
+                </label><br>
+
+                <label>
+                    <input type="radio" name="material-category" value="concrete">
+                    混凝土
+                </label><br>
+
+                <label>
+                    <input type="radio" name="material-category" value="other">
+                    其他 (有机物 / 液体 / 油 / 食物 / 等.)
+                </label>
+            </div>
+
+        </section>
+        <section id="kinematics">
+            <h2>运动学属性</h2>
+
+            <video id="motion-video" controls loop muted style="width: 500px; height: 500px;">
+                <source id="video-source" src="" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <div id="no-motion-hint" style="width: 500px; height: 500px; 
+                display: none; 
+                align-items: center; 
+                margin: 0 auto;
+                justify-content: center;
+                border: 1px dashed #aaa;
+                color: #666;
+                font-style: italic;">
+                该部件未检测到视频.
+            </div>
+
+            <div>
+                <div style="margin-top:12px;margin-bottom:6px; color:#555;">
+                    <b>预测运动类型:</b>
+                    <span id="predicted-motion-type" style="font-style: italic;">
+                        Unknown
+                    </span>
+                </div>
+                <label>运动学有效性:</label>
+                <input type="radio" name="kinematics-valid" value="true"> 合理
+                <input type="radio" name="kinematics-valid" value="false"> 不合理
+                <input type="radio" name="kinematics-valid" value="unknown"> 未知
+                <div id="kinematics-reasons" style="display: none; margin-top: 10px;">
+                    <label>不合理原因 (选择所有适用项):</label><br>
+                    <input type="checkbox" name="kinematics-reason" value="type"> 运动类型 (例如，静态部件被预测为可移动；应旋转但平移)<br>
+                    <input type="checkbox" name="kinematics-reason" value="axis"> 运动轴 (方向或姿态不符合直觉)<br>
+                    <input type="checkbox" name="kinematics-reason" value="position"> 运动位置 (例如，旋转中心或平移起点不正确)<br>
+                    <input type="checkbox" name="kinematics-reason" value="direction"> 运动方向 (相反)<br>
+                    <input type="checkbox" name="kinematics-reason" value="composition"> 运动传递错误 (附加部件移动不正确)<br>
+                    <input type="checkbox" name="kinematics-reason" value="motion_range"> 运动范围 (持续时间不合理)<br>
+                    <!-- <input type="checkbox" name="kinematics-reason" value="behavior"> 物理行为 (例如，违背重力直觉或穿透物体)<br> -->
+                </div>
+            </div>
+            <!-- Motion Type Correction Panel -->
+            <div id="motion-type-panel"
+                style="display:none; margin-top:10px; padding-left:15px; border-left:3px solid #ccc;">
+                <label><b>修正运动类型 (必需):</b></label><br>
+
+                <label>
+                    <input type="radio" name="motion-type" value="rotation">
+                    旋转
+                </label><br>
+
+                <label>
+                    <input type="radio" name="motion-type" value="translation">
+                    平移
+                </label><br>
+
+                <label>
+                    <input type="radio" name="motion-type" value="contact_only">
+                    仅接触
+                </label><br>
+
+                <label>
+                    <input type="radio" name="motion-type" value="rigid">
+                    刚体
+                </label>
+            </div>
+            <!-- Motion Axis and Position Correction Panels -->
+            <div id="axis-panel" style="display:none;">
+                <div>
+                    <b>候选运动轴</b>
+                </div>
+
+                <img id="axis-view" class="zoomable" src="" width="420"><br><br>
+
+                <!-- 10 个 xyz 轴 -->
+                <div>
+                    <b>原始坐标轴</b><br>
+                    <label>
+                        <input type="radio" name="axis-choice" value="7">
+                        <span class="axis-arrow" style="--c: red;"></span> 红色
+                    </label><br>
+
+                    <label>
+                        <input type="radio" name="axis-choice" value="8">
+                        <span class="axis-arrow" style="--c: green;"></span> 绿色
+                    </label><br>
+
+                    <label>
+                        <input type="radio" name="axis-choice" value="9">
+                        <span class="axis-arrow" style="--c: blue;"></span> 蓝色
+                    </label>
+
+                    <!-- 重复到 axis_9 -->
+                </div>
+
+                <br>
+
+                <!-- 7 个平面拟合轴 -->
+                <div>
+                    <b>Fitted Plane Axes</b><br>
+                    <label>
+                        <input type="radio" name="axis-choice" value="0">
+                        <span class="axis-arrow" style="--c: yellow;"></span> 黄色
+                    </label><br>
+
+                    <label>
+                        <input type="radio" name="axis-choice" value="1">
+                        <span class="axis-arrow" style="--c: orange;"></span> 橙色
+                    </label><br>
+
+                    <label>
+                        <input type="radio" name="axis-choice" value="2">
+                        <span class="axis-arrow" style="--c: purple;"></span> 紫色
+                    </label><br>
+
+                    <label>
+                        <input type="radio" name="axis-choice" value="3">
+                        <span class="axis-arrow" style="--c: cyan;"></span> 青色
+                    </label><br>
+
+                    <label>
+                        <input type="radio" name="axis-choice" value="4">
+                        <span class="axis-arrow" style="--c: magenta;"></span> 品红
+                    </label><br>
+
+                    <label>
+                        <input type="radio" name="axis-choice" value="5">
+                        <span class="axis-arrow" style="--c: #555;"></span> 深灰色
+                    </label><br>
+
+                    <label>
+                        <input type="radio" name="axis-choice" value="6">
+                        <span class="axis-arrow" style="--c: brown;"></span> 棕色
+                    </label><br>
+                    <label>
+                        <input type="radio" name="axis-choice" value="-2">
+                        <span class="axis-arrow" style="--c: black;"></span> (无拟合)
+                    </label><br>
+                    <!-- 到 plane_6 -->
+                </div>
+            </div>
+
+            <div id="position-panel" style="display:none;">
+                <div>
+                    <b>候选运动位置</b>
+                </div>
+
+                <img id="pivot-view" class="zoomable" src="" width="420"><br><br>
+
+                <div>
+                    <label>
+                        <input type="radio" name="position-choice" value="0">
+                        <span class="color-dot" style="background:red;"></span> 红色
+                    </label><br>
+
+                    <label>
+                        <input type="radio" name="position-choice" value="1">
+                        <span class="color-dot" style="background:green;"></span> 绿色
+                    </label><br>
+
+                    <label>
+                        <input type="radio" name="position-choice" value="2">
+                        <span class="color-dot" style="background:blue;"></span> 蓝色
+                    </label><br>
+
+                    <label>
+                        <input type="radio" name="position-choice" value="3">
+                        <span class="color-dot" style="background:yellow;"></span> 黄色
+                    </label><br>
+
+                    <label>
+                        <input type="radio" name="position-choice" value="4">
+                        <span class="color-dot" style="background:purple;"></span> 紫色
+                    </label><br>
+
+                    <label>
+                        <input type="radio" name="position-choice" value="5">
+                        <span class="color-dot" style="background:brown;"></span> 棕色
+                    </label><br>
+                    <label>
+                        <input type="radio" name="position-choice" value="-1">
+                        <span class="color-dot" style="background:black;"></span> (部件中心)
+                    </label><br>
+                    <label>
+                        <input type="radio" name="position-choice" value="-2">
+                        <span class="color-dot" style="background:black;"></span> (无拟合)
+                    </label>
+                </div>
+            </div>
+
+
+            <div id="motion-range-panel" style="display:none; margin-top:10px;">
+                <label>合理的运动范围 (秒/度/厘米):</label><br>
+
+                开始:
+                <input type="number" id="motion-start" step="0.01" min="0" style="width:80px;" value="0">
+
+                &nbsp; 结束:
+                <input type="number" id="motion-end" step="0.01" min="0" style="width:80px;" value="-1">
+
+                <div style="font-size: 12px; color: #666; margin-top: 5px;">
+                    Select the time interval where the motion looks reasonable.
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <div style="margin-bottom:10px; background: white;">
+            <label><b>Check Decision:</b></label>
+            &nbsp;&nbsp;
+            <label>
+                <input type="radio" name="check-decision" value="accept">
+                接受
+            </label>
+            &nbsp;&nbsp;
+            <label>
+                <input type="radio" name="check-decision" value="reject">
+                拒绝
+            </label>
+            <button id="submit-check-button" style="margin-left: 10px;">提交检查结果</button>
+        </div>
+        <button id="submit-button">修改结果</button>
+    </footer>
+    <script src="main.js"></script>
+</body>
+
+</html>
